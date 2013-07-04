@@ -1,7 +1,7 @@
 # Archivista!
 
-name: 'Archivista'
-version: '0.1.0'
+name: 'archivista'
+version: '0.1.1'
 description: 'gatta have the right tools for the right job, ya know?'
 keywords: [
 	'update'
@@ -24,17 +24,16 @@ bugs:
 main: './lib/archivista.js'
 dependencies:
 	semver: \x
-	#request: \x
 	walkdir: \x # get rid of this... use fstreams
+	archiver: \x
+	debug: \x
+runtimeDependencies:
+	request: \x
 	#fstream: \x
 	#'fstream-ignore': \x
-	#tar: \x
-	archiver: \x
+	tar: \x
 	#temp: \x
-	#rimraf: \x
-	debug: \x
-	#lodash: \x
-	#mkdirp: \x
+	rimraf: \x
 directories:
 	src: 'src'
 	lib: 'lib'

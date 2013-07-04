@@ -1,6 +1,6 @@
 {
-  "name": "Archivista",
-  "version": "0.1.0",
+  "name": "archivista",
+  "version": "0.1.1",
   "description": "gatta have the right tools for the right job, ya know?",
   "keywords": [
     "update"
@@ -29,6 +29,11 @@
     "walkdir": "x",
     "archiver": "x",
     "debug": "x"
+  },
+  "runtimeDependencies": {
+    "request": "x",
+    "tar": "x",
+    "rimraf": "x"
   },
   "directories": {
     "src": "src",
