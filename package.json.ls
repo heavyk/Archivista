@@ -1,7 +1,7 @@
 # Archivista!
 
 name: 'archivista'
-version: '0.1.1'
+version: '0.1.2'
 description: 'gatta have the right tools for the right job, ya know?'
 keywords: [
 	'update'

@@ -40,7 +40,7 @@ export dl_and_untar = (opts, tar_done) ->
     #console.log "entry", entry.props.path
     #unless test entry
     # console.log "rejected!"
-  exists local_file, (existing) ->
+  Fs.exists local_file, (existing) ->
     console.log "existing", existing, local_file
     if opts.sha1
       sha1 = require \crypto .createHash \sha1
@@ -124,34 +124,42 @@ Zip = (config) ->
 
 Zip::add = (paths, opt_callback, opt_basepath) ->
   instance = this
-  if typeof paths is 'string'
-    if not Fs.existsSync paths
-      debug 'File %s not found.', paths
-      return
-    statSync = Fs.statSync paths
-    if statSync.isFile!
-      paths = [paths]
-    else if statSync.isDirectory!
-      opt_basepath = paths
-      paths = walkdir.sync paths
   config = instance.config
   filepath = paths.pop!
-  relative = void
-  if filepath
-    # '../' * (opts.strip or 0)
-    relative = Path.join config.root, opt_basepath, '../' * (config.strip or 0), Path.relative opt_basepath, filepath
-    Fs.stat filepath, (err, stat) ->
-      if not stat
-        debug 'File %s not found.', filepath
-        instance.add paths, opt_callback, opt_basepath
-      else
-        if stat.isFile!
-          debug 'Added %s', relative
-          instance.zip.addFile (Fs.createReadStream filepath), {name: relative}, -> instance.add paths, opt_callback, opt_basepath
-        else
+  do_add = ->
+    if filepath
+      # '../' * (opts.strip or 0)
+      relative = Path.join config.root, opt_basepath, '../' * (config.strip or 0), Path.relative opt_basepath, filepath
+      Fs.stat filepath, (err, stat) ->
+        if not stat
+          debug 'File %s not found.', filepath
           instance.add paths, opt_callback, opt_basepath
-  else
-    opt_callback.call instance, paths if opt_callback
+        else
+          if stat.isFile!
+            debug 'Added %s', relative
+            instance.zip.addFile (Fs.createReadStream filepath), {name: relative}, -> instance.add paths, opt_callback, opt_basepath
+          else
+            instance.add paths, opt_callback, opt_basepath
+    else
+      opt_callback.call instance, paths if opt_callback
+  if typeof paths is 'string'
+    (exists) <- Fs.exists paths
+    if not exists
+      debug 'File %s not found.', paths
+      opt_callback new Error "File #{paths} not found."
+    else
+      (st) <- Fs.stat paths
+      if st.isFile!
+        paths := [paths]
+        do_add!
+      else if st.isDirectory!
+        opt_basepath := paths
+        walkdir paths, (p) ->
+          paths := p
+          do_add!
+      else do_add!
+  else do_add!
+
 
 Zip::done = (opt_callback) ->
   instance = this
